@@ -16,6 +16,7 @@ It tests two public practice apps:
 | **API client layer** | `api/booking_client.py` wraps the endpoints using Playwright's built-in `APIRequestContext`. No extra HTTP library is needed. |
 | **Data-driven tests** | `pytest.mark.parametrize` covers login validation, checkout validation and all four sort orders. |
 | **Fixtures and cleanup** | Fixtures log in, create bookings and delete them afterwards, so every test is independent. |
+| **Contract tests** | JSON Schemas in `api/schemas.py` catch API changes such as a field changing type, going missing, or new fields appearing. |
 | **Known-defect tracking** | A strict `xfail` records a real API bug (500 instead of 400). The suite flags it if the bug is ever fixed. |
 | **Cross-browser** | CI runs the UI suite on Chromium and Firefox in parallel with `pytest-xdist`. |
 | **Debuggability** | Failed UI tests keep a Playwright trace and a screenshot. Every run publishes an HTML report. |
@@ -58,6 +59,6 @@ playwright show-trace test-results/<test-name>/trace.zip
 
 - [ ] Visual regression checks
 - [ ] Accessibility checks with axe-core
-- [ ] JSON schema validation for API responses
+- [x] JSON schema validation for API responses (`api/schemas.py`)
 - [ ] Performance-glitch user and timing assertions
 - [ ] Allure reporting
