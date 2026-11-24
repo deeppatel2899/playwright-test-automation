@@ -60,5 +60,5 @@ playwright show-trace test-results/<test-name>/trace.zip
 - [ ] Visual regression checks
 - [ ] Accessibility checks with axe-core
 - [x] JSON schema validation for API responses (`api/schemas.py`)
-- [ ] Performance-glitch user and timing assertions
+- [x] Faulty-user tests: login time budget and tracked defects (`tests/ui/test_problem_users.py`)
 - [ ] Allure reporting
