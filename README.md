@@ -17,6 +17,7 @@ It tests two public practice apps:
 | **Data-driven tests** | `pytest.mark.parametrize` covers login validation, checkout validation and all four sort orders. |
 | **Fixtures and cleanup** | Fixtures log in, create bookings and delete them afterwards, so every test is independent. |
 | **Contract tests** | JSON Schemas in `api/schemas.py` catch API changes such as a field changing type, going missing, or new fields appearing. |
+| **Accessibility checks** | `tests/ui/test_accessibility.py` scans login, inventory, cart and checkout with axe-core (WCAG 2.1 A/AA). Known issues live in `a11y/baseline.json`, so the build fails only on a NEW serious or critical violation. |
 | **Known-defect tracking** | A strict `xfail` records a real API bug (500 instead of 400). The suite flags it if the bug is ever fixed. |
 | **Cross-browser** | CI runs the UI suite on Chromium and Firefox in parallel with `pytest-xdist`. |
 | **Debuggability** | Failed UI tests keep a Playwright trace and a screenshot. Every run publishes an HTML report. |
@@ -27,6 +28,7 @@ It tests two public practice apps:
 ```
 pages/            Page objects (login, inventory, cart, checkout)
 api/              Restful Booker API client
+a11y/             axe-core scanner and the accessibility baseline
 tests/ui/         Browser tests
 tests/api/        API tests
 config.py         URLs and credentials, all overridable with env vars
@@ -58,7 +60,7 @@ playwright show-trace test-results/<test-name>/trace.zip
 ## Roadmap
 
 - [ ] Visual regression checks
-- [ ] Accessibility checks with axe-core
+- [x] Accessibility checks with axe-core, gated on a baseline (`tests/ui/test_accessibility.py`)
 - [x] JSON schema validation for API responses (`api/schemas.py`)
 - [x] Faulty-user tests: login time budget and tracked defects (`tests/ui/test_problem_users.py`)
 - [ ] Allure reporting

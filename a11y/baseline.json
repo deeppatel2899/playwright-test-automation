@@ -1,0 +1,6 @@
+{
+  "login": ["page-has-heading-one", "region"],
+  "inventory": ["page-has-heading-one"],
+  "cart": ["page-has-heading-one"],
+  "checkout": ["page-has-heading-one"]
+}
