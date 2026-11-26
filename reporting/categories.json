@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Known defects (tracked with xfail)",
+    "description": "Bugs in the apps under test that are recorded on purpose. They should stay red until fixed.",
+    "matchedStatuses": ["skipped"],
+    "messageRegex": "(?s).*Known defect.*"
+  },
+  {
+    "name": "Accessibility regressions",
+    "description": "A page gained a serious or critical axe-core violation that is not in a11y/baseline.json.",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?s).*accessibility violations.*"
+  },
+  {
+    "name": "API contract breaks",
+    "description": "A response no longer matches its JSON Schema in api/schemas.py.",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?s).*(does not match schema|ValidationError).*"
+  },
+  {
+    "name": "Timeouts and network issues",
+    "description": "Usually the public demo site being slow or down, not a product bug. Re-run before triaging.",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": "(?s).*(Timeout|timed out|ECONNRESET|ERR_NAME_NOT_RESOLVED|net::ERR_).*"
+  },
+  {
+    "name": "Product defects",
+    "description": "An assertion failed: the app behaved differently from what the test expects.",
+    "matchedStatuses": ["failed"]
+  },
+  {
+    "name": "Test defects",
+    "description": "The test itself errored (fixture, selector or code problem) before it could assert.",
+    "matchedStatuses": ["broken"]
+  }
+]

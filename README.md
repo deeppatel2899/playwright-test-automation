@@ -21,6 +21,7 @@ It tests two public practice apps:
 | **Known-defect tracking** | A strict `xfail` records a real API bug (500 instead of 400). The suite flags it if the bug is ever fixed. |
 | **Cross-browser** | CI runs the UI suite on Chromium and Firefox in parallel with `pytest-xdist`. |
 | **Debuggability** | Failed UI tests keep a Playwright trace and a screenshot. Every run publishes an HTML report. |
+| **Allure reporting** | CI merges the API job and both browser jobs into one Allure report. Tests are grouped by layer and feature, failed UI tests carry a screenshot and the URL, and failures are sorted into categories (product defect, a11y regression, contract break, timeout, known defect) by `reporting/categories.json`. |
 | **CI/CD** | GitHub Actions runs lint, API and UI jobs on every push and PR, plus a daily scheduled run. |
 
 ## Project layout
@@ -29,6 +30,7 @@ It tests two public practice apps:
 pages/            Page objects (login, inventory, cart, checkout)
 api/              Restful Booker API client
 a11y/             axe-core scanner and the accessibility baseline
+reporting/        Allure labels, environment info and failure categories
 tests/ui/         Browser tests
 tests/api/        API tests
 config.py         URLs and credentials, all overridable with env vars
@@ -49,6 +51,15 @@ pytest -m ui --headed       # watch the browser
 pytest -m ui --browser firefox -n 4 --html=reports/report.html --self-contained-html
 ```
 
+To build the Allure report locally (needs Java):
+
+```bash
+pytest --alluredir=allure-results
+npx allure-commandline generate allure-results --clean --single-file -o allure-report
+```
+
+In CI, download the `allure-report` artifact and open `index.html`.
+
 To point the suite at another environment, set `UI_BASE_URL` or `API_BASE_URL`.
 
 To debug a failure, download the CI artifact and open the trace:
@@ -63,4 +74,4 @@ playwright show-trace test-results/<test-name>/trace.zip
 - [x] Accessibility checks with axe-core, gated on a baseline (`tests/ui/test_accessibility.py`)
 - [x] JSON schema validation for API responses (`api/schemas.py`)
 - [x] Faulty-user tests: login time budget and tracked defects (`tests/ui/test_problem_users.py`)
-- [ ] Allure reporting
+- [x] Allure reporting with failure categories (`reporting/`)
