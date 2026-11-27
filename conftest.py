@@ -3,10 +3,18 @@ from pathlib import Path
 
 import pytest
 
-# Make `config`, `pages`, `api` and `reporting` importable from anywhere in the suite.
+# Make `config`, `pages`, `api`, `reporting` and `visual` importable from anywhere in the suite.
 sys.path.insert(0, str(Path(__file__).parent))
 
 import reporting  # noqa: E402
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--update-snapshots",
+        action="store_true",
+        help="record new visual baselines instead of comparing against them",
+    )
 
 
 @pytest.fixture(autouse=True)

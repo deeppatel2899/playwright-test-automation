@@ -18,10 +18,11 @@ It tests two public practice apps:
 | **Fixtures and cleanup** | Fixtures log in, create bookings and delete them afterwards, so every test is independent. |
 | **Contract tests** | JSON Schemas in `api/schemas.py` catch API changes such as a field changing type, going missing, or new fields appearing. |
 | **Accessibility checks** | `tests/ui/test_accessibility.py` scans login, inventory, cart and checkout with axe-core (WCAG 2.1 A/AA). Known issues live in `a11y/baseline.json`, so the build fails only on a NEW serious or critical violation. |
+| **Visual regression** | `tests/ui/test_visual.py` compares login, inventory, product and cart screenshots with per-browser baselines in `visual/baselines/`. A small per-pixel tolerance absorbs anti-aliasing noise, and a test proves the check still catches `problem_user`'s wrong product images. Failures save the actual and a red-highlighted diff image. |
 | **Known-defect tracking** | A strict `xfail` records a real API bug (500 instead of 400). The suite flags it if the bug is ever fixed. |
 | **Cross-browser** | CI runs the UI suite on Chromium and Firefox in parallel with `pytest-xdist`. |
 | **Debuggability** | Failed UI tests keep a Playwright trace and a screenshot. Every run publishes an HTML report. |
-| **Allure reporting** | CI merges the API job and both browser jobs into one Allure report. Tests are grouped by layer and feature, failed UI tests carry a screenshot and the URL, and failures are sorted into categories (product defect, a11y regression, contract break, timeout, known defect) by `reporting/categories.json`. |
+| **Allure reporting** | CI merges the API job and both browser jobs into one Allure report. Tests are grouped by layer and feature, failed UI tests carry a screenshot and the URL, and failures are sorted into categories (product defect, a11y regression, visual regression, contract break, timeout, known defect) by `reporting/categories.json`. |
 | **CI/CD** | GitHub Actions runs lint, API and UI jobs on every push and PR, plus a daily scheduled run. |
 
 ## Project layout
@@ -30,6 +31,7 @@ It tests two public practice apps:
 pages/            Page objects (login, inventory, cart, checkout)
 api/              Restful Booker API client
 a11y/             axe-core scanner and the accessibility baseline
+visual/           Screenshot comparison and per-browser baselines
 reporting/        Allure labels, environment info and failure categories
 tests/ui/         Browser tests
 tests/api/        API tests
@@ -60,6 +62,13 @@ npx allure-commandline generate allure-results --clean --single-file -o allure-r
 
 In CI, download the `allure-report` artifact and open `index.html`.
 
+After an intended UI change, re-record the visual baselines for each browser and review the PNGs before committing:
+
+```bash
+pytest -m visual --browser chromium --update-snapshots
+pytest -m visual --browser firefox --update-snapshots
+```
+
 To point the suite at another environment, set `UI_BASE_URL` or `API_BASE_URL`.
 
 To debug a failure, download the CI artifact and open the trace:
@@ -70,7 +79,7 @@ playwright show-trace test-results/<test-name>/trace.zip
 
 ## Roadmap
 
-- [ ] Visual regression checks
+- [x] Visual regression checks against per-browser baselines (`tests/ui/test_visual.py`)
 - [x] Accessibility checks with axe-core, gated on a baseline (`tests/ui/test_accessibility.py`)
 - [x] JSON schema validation for API responses (`api/schemas.py`)
 - [x] Faulty-user tests: login time budget and tracked defects (`tests/ui/test_problem_users.py`)

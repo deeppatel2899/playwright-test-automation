@@ -12,6 +12,12 @@
     "messageRegex": "(?s).*accessibility violations.*"
   },
   {
+    "name": "Visual regressions",
+    "description": "A screen differs from its baseline in visual/baselines by more than the tolerance. Check the attached diff image.",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?s).*visual regression.*"
+  },
+  {
     "name": "API contract breaks",
     "description": "A response no longer matches its JSON Schema in api/schemas.py.",
     "matchedStatuses": ["failed"],
