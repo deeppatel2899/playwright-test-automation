@@ -18,7 +18,7 @@ It tests two public practice apps:
 | **Fixtures and cleanup** | Fixtures log in, create bookings and delete them afterwards, so every test is independent. |
 | **Contract tests** | JSON Schemas in `api/schemas.py` catch API changes such as a field changing type, going missing, or new fields appearing. |
 | **Accessibility checks** | `tests/ui/test_accessibility.py` scans login, inventory, cart and checkout with axe-core (WCAG 2.1 A/AA). Known issues live in `a11y/baseline.json`, so the build fails only on a NEW serious or critical violation. |
-| **Visual regression** | `tests/ui/test_visual.py` compares login, inventory, product and cart screenshots with per-browser baselines in `visual/baselines/`. A small per-pixel tolerance absorbs anti-aliasing noise, and a test proves the check still catches `problem_user`'s wrong product images. Failures save the actual and a red-highlighted diff image. |
+| **Visual regression** | `tests/ui/test_visual.py` compares login, inventory, product and cart screenshots with per-browser baselines in `visual/baselines/`. A light blur plus a per-pixel tolerance absorbs sub-pixel text rendering differences between machines, and a test proves the check still catches `problem_user`'s wrong product images. Failures save the actual and a red-highlighted diff image. |
 | **Known-defect tracking** | A strict `xfail` records a real API bug (500 instead of 400). The suite flags it if the bug is ever fixed. |
 | **Cross-browser** | CI runs the UI suite on Chromium and Firefox in parallel with `pytest-xdist`. |
 | **Debuggability** | Failed UI tests keep a Playwright trace and a screenshot. Every run publishes an HTML report. |

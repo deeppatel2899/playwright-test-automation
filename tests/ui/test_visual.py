@@ -102,10 +102,16 @@ def test_comparator_ignores_noise_but_flags_real_changes():
     noisy.putpixel((5, 5), (230, 230, 230))  # anti-aliasing sized change
     assert visual.compare(noisy, _blank()).passed
 
+    # A thin "glyph stroke" one pixel to the right, like text hinted differently on CI.
+    text, shifted = _blank(), _blank()
+    for x0, image in ((10, text), (11, shifted)):
+        ImageDraw.Draw(image).rectangle((x0, 10, x0, 90), fill="black")
+    assert visual.compare(shifted, text).passed
+
     changed = _blank()
     ImageDraw.Draw(changed).rectangle((0, 0, 19, 19), fill="black")  # 4% of the image
     result = visual.compare(changed, _blank())
     assert not result.passed
-    assert result.diff_ratio == pytest.approx(0.04)
+    assert result.diff_ratio == pytest.approx(0.04, abs=0.01)
 
     assert not visual.compare(_blank((100, 101)), _blank()).size_matches

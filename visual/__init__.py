@@ -4,10 +4,13 @@ DOM assertions prove an element exists; they can't tell that a product shows
 the wrong image or that a stylesheet stopped loading. Comparing screenshots
 catches that class of bug.
 
-Exact pixel equality is too brittle: font anti-aliasing and image scaling vary
-slightly between runs. So a pixel only counts as changed when a channel moves
-by more than `PIXEL_TOLERANCE`, and a page fails only when more than
-`MAX_DIFF_RATIO` of its pixels changed. Baselines are stored per browser,
+Exact pixel equality is too brittle: glyph hinting and anti-aliasing differ
+between machines, so every line of text shifts by a sub-pixel. Both images are
+softened with a small blur first, which removes that edge noise but keeps real
+changes such as a swapped image, a moved block or a colour change. After that a
+pixel only counts as changed when a channel moves by more than
+`PIXEL_TOLERANCE`, and a page fails only when more than `MAX_DIFF_RATIO` of its
+pixels changed. Baselines are stored per browser,
 because Chromium and Firefox render text differently. They are recorded on
 Linux to match CI, so a local run on macOS or Windows may differ.
 
@@ -19,11 +22,13 @@ from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageFilter
 
 BASELINE_DIR = Path(__file__).parent / "baselines"
 OUTPUT_DIR = Path("test-results") / "visual"
 
+# Enough to wash out sub-pixel text differences between CI and a local run.
+BLUR_RADIUS = 1.5
 # 0-255 per channel. Absorbs anti-aliasing noise, not a real colour change.
 PIXEL_TOLERANCE = 40
 # Share of pixels allowed to change before the page counts as different.
@@ -55,7 +60,8 @@ def compare(actual: Image.Image, expected: Image.Image) -> Comparison:
         return Comparison(diff_ratio=1.0, size_matches=False, diff_image=None)
 
     # Largest channel difference per pixel, then a 0/255 mask of changed pixels.
-    delta = ImageChops.difference(actual, expected)
+    blur = ImageFilter.GaussianBlur(BLUR_RADIUS)
+    delta = ImageChops.difference(actual.filter(blur), expected.filter(blur))
     per_pixel = ImageChops.lighter(ImageChops.lighter(*delta.split()[:2]), delta.split()[2])
     mask = per_pixel.point(lambda v: 255 if v > PIXEL_TOLERANCE else 0)
 
